@@ -16,7 +16,7 @@ module Instaw
       @cookie = nil
       connect
       post('/accounts/login/ajax/', {username: username, password: password}, {
-        'referer' => base_url + '/',
+        'referer' => Instaw.endpoint + '/',
         'x-csrftoken' => csrftoken,
         'x-instagram-ajax' => '1'})
       @authorized = true

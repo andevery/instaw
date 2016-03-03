@@ -3,8 +3,6 @@ require 'uri'
 
 module Instaw
   module Request
-    SCHEME = 'https'
-    HOST = 'www.instagram.com'
 
     def get(path, options = {}, headers = {}, ajax = true)
       request(:get, path, options, headers, ajax)
@@ -17,7 +15,7 @@ module Instaw
     private
 
     def request(method, path, options = {}, headers = {}, ajax = true)
-      conn = Faraday.new(base_url)
+      conn = Faraday.new(Instaw.endpoint)
       response = conn.send(method, path) do |request|
         request.headers = default_headers.merge(method: method.to_s.upcase)
                                          .merge(path: path)
@@ -40,10 +38,6 @@ module Instaw
       response
     end
 
-    def base_url
-      "#{SCHEME}://#{HOST}"
-    end
-
     def default_headers
       {
         'authority' => "#{HOST}",
@@ -61,7 +55,7 @@ module Instaw
     def ajax_headers
       {
         'content-type' => 'application/x-www-form-urlencoded; charset=UTF-8',
-        'origin' => base_url,
+        'origin' => Instaw.endpoint,
         'x-requested-with' => 'XMLHttpRequest'
       }
     end

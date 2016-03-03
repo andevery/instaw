@@ -7,7 +7,6 @@ describe Instaw::Request do
     end.new
   }
 
-  let(:url) { 'https://www.instagram.com' }
   let(:headers) {{
       'authority' => 'www.instagram.com',
       'method' => 'GET',
@@ -21,45 +20,45 @@ describe Instaw::Request do
       'pragma' => 'no-cache',
       'user-agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36',
       'content-type' => 'application/x-www-form-urlencoded; charset=UTF-8',
-      'origin' => url,
+      'origin' => 'https://www.instagram.com',
       'x-requested-with' => 'XMLHttpRequest'
   }}
 
   it 'sends request with correct url' do
-    req = stub_request(:post, url + '/foo')
+    req = stub_post('/foo')
     subject.send(:request, :post, '/foo')
     expect(req).to have_been_made
   end
 
   it 'sends request with options' do
     options = {foo: 'bar'}
-    req = stub_request(:get, url).with(query: options)
+    req = stub_get.with(query: options)
     subject.send(:request, :get, '/', options)
     expect(req).to have_been_made
   end
 
   it 'sends request with body' do
     options = {foo: 'bar'}
-    req = stub_request(:post, url).with(body: options)
+    req = stub_post.with(body: options)
     subject.send(:request, :post, '/', options)
     expect(req).to have_been_made
   end
 
   it 'sends request with default headers' do
-    req = stub_request(:get, url).with(headers: headers)
+    req = stub_get.with(headers: headers)
     subject.send(:request, :get, '/')
     expect(req).to have_been_made
   end
 
   it 'sends request with custom headers' do
-    req = stub_request(:get, url).with(headers: headers.merge!({'upgrade-insecure-requests' => '1'}))
+    req = stub_get.with(headers: headers.merge!({'upgrade-insecure-requests' => '1'}))
     subject.send(:request, :get, '/', {}, {'upgrade-insecure-requests' => '1'})
     expect(req).to have_been_made
   end
 
   it 'saves cookies' do
     cookie = 'foo=bar'
-    req = stub_request(:get, url).to_return(headers: {'set-cookie' => cookie})
+    req = stub_get.to_return(headers: {'set-cookie' => cookie})
     subject.send(:request, :get, '/')
     expect(subject.instance_variable_get('@cookie')).to eq cookie
   end
