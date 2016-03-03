@@ -1,6 +1,7 @@
 require "instaw/version"
+require "instaw/client"
+require "instaw/request"
+require "instaw/error"
 
 module Instaw
-  class Client
-  end
 end

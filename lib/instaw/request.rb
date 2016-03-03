@@ -1,0 +1,80 @@
+require 'faraday'
+require 'uri'
+
+module Instaw
+  module Request
+    SCHEME = 'https'
+    HOST = 'www.instagram.com'
+
+    def get(path, options = {}, headers = {}, ajax = true)
+      request(:get, path, options, headers, ajax)
+    end
+
+    def post(path, options = {}, headers = {}, ajax = true)
+      request(:post, path, options, headers, ajax)
+    end
+
+    private
+
+    def request(method, path, options = {}, headers = {}, ajax = true)
+      conn = Faraday.new(base_url)
+      response = conn.send(method, path) do |request|
+        request.headers = default_headers.merge(method: method.to_s.upcase)
+                                         .merge(path: path)
+                                         .merge(headers)
+                                         .merge(cookie: ['ig_pr=1; ig_vw=1280', @cookie].compact.join('; '))
+        if ajax
+          request.headers = request.headers.merge(ajax_headers)
+        end
+        case method
+        when :get
+          request.url(URI.encode(path), options)
+        when :post
+          request.path = URI.encode(path)
+          request.body = options unless options.empty?
+        end
+      end
+      if response.headers['set-cookie']
+        parse_cookie(response.headers['set-cookie'])
+      end
+      response
+    end
+
+    def base_url
+      "#{SCHEME}://#{HOST}"
+    end
+
+    def default_headers
+      {
+        'authority' => "#{HOST}",
+        'scheme' => "#{SCHEME}",
+        'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'accept-encoding' => 'gzip, deflate',
+        'accept-language' => 'ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4',
+        'cache-control' => 'no-cache',
+        'cookie' => 'ig_pr=1; ig_vw=1280',
+        'pragma' => 'no-cache',
+        'user-agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36'
+      }
+    end
+
+    def ajax_headers
+      {
+        'content-type' => 'application/x-www-form-urlencoded; charset=UTF-8',
+        'origin' => base_url,
+        'x-requested-with' => 'XMLHttpRequest'
+      }
+    end
+
+    def csrftoken
+      return "" unless @cookie
+      @cookie[/csrftoken=([0-9a-z]+)/, 1] || ""
+    end
+
+    def parse_cookie(cookie_string)
+      @cookie = cookie_string
+                 .gsub(/expires=(\w+),\s/, "expires=#{$1} ")
+                 .split(', ').map{|s| s.split('; ').first}.join('; ')
+    end
+  end
+end
