@@ -1,8 +1,11 @@
+Dir[File.expand_path('../client/*.rb', __FILE__)].each{|f| require f}
+
 require 'instaw/request'
 
 module Instaw
   class Client
     include Instaw::Request
+    include Instaw::Client::Locations
 
     attr_reader :cookie
 

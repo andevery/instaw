@@ -1,5 +1,6 @@
 require 'faraday'
 require 'uri'
+require 'json'
 
 module Instaw
   module Request
@@ -15,7 +16,11 @@ module Instaw
     private
 
     def request(method, path, options = {}, headers = {}, ajax = true)
-      conn = Faraday.new(Instaw.endpoint)
+      conn = Faraday.new(Instaw.endpoint) do |faraday|
+        faraday.request  :url_encoded
+        faraday.adapter  Faraday.default_adapter
+        faraday.use Instaw::HttpException
+      end
       response = conn.send(method, path) do |request|
         request.headers = default_headers.merge(method: method.to_s.upcase)
                                          .merge(path: path)
@@ -35,6 +40,10 @@ module Instaw
       if response.headers['set-cookie']
         parse_cookie(response.headers['set-cookie'])
       end
+      # unless ajax
+      #   return response.body
+      # end
+      # JSON.parse(response.body)
       response
     end
 
