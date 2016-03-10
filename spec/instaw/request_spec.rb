@@ -13,7 +13,7 @@ describe Instaw::Request do
       'path' => '/',
       'scheme' => 'https',
       'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-      'accept-encoding' => 'gzip, deflate',
+      'accept-encoding' => 'deflate',
       'accept-language' => 'ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4',
       'cache-control' => 'no-cache',
       'cookie' => 'ig_pr=1; ig_vw=1280',
@@ -25,40 +25,40 @@ describe Instaw::Request do
   }}
 
   it 'sends request with correct url' do
-    req = stub_post('/foo')
+    req = stub_post('/foo').to_return(body: '{}')
     subject.send(:request, :post, '/foo')
     expect(req).to have_been_made
   end
 
   it 'sends request with options' do
     options = {foo: 'bar'}
-    req = stub_get.with(query: options)
+    req = stub_get.with(query: options).to_return(body: '{}')
     subject.send(:request, :get, '/', options)
     expect(req).to have_been_made
   end
 
   it 'sends request with body' do
     options = {foo: 'bar'}
-    req = stub_post.with(body: options)
+    req = stub_post.with(body: options).to_return(body: '{}')
     subject.send(:request, :post, '/', options)
     expect(req).to have_been_made
   end
 
   it 'sends request with default headers' do
-    req = stub_get.with(headers: headers)
+    req = stub_get.with(headers: headers).to_return(body: '{}')
     subject.send(:request, :get, '/')
     expect(req).to have_been_made
   end
 
   it 'sends request with custom headers' do
-    req = stub_get.with(headers: headers.merge!({'upgrade-insecure-requests' => '1'}))
+    req = stub_get.with(headers: headers.merge!({'upgrade-insecure-requests' => '1'})).to_return(body: '{}')
     subject.send(:request, :get, '/', {}, {'upgrade-insecure-requests' => '1'})
     expect(req).to have_been_made
   end
 
   it 'saves cookies' do
     cookie = 'foo=bar'
-    req = stub_get.to_return(headers: {'set-cookie' => cookie})
+    req = stub_get.to_return(headers: {'set-cookie' => cookie}, body: '{}')
     subject.send(:request, :get, '/')
     expect(subject.instance_variable_get('@cookie')).to eq cookie
   end

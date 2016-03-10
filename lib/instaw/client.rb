@@ -5,7 +5,8 @@ require 'instaw/request'
 module Instaw
   class Client
     include Instaw::Request
-    include Instaw::Client::Locations
+    include Instaw::Client::Searching
+    include Instaw::Client::Media
 
     attr_reader :cookie
 

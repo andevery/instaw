@@ -28,4 +28,7 @@ module Instaw
 
   # Raised when Instagram returns the HTTP status code 429
   class RateLimitExceeded < Error; end
+
+  # Raised when response body is malformed
+  class MalformedResponseBody < Error; end
 end

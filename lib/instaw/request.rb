@@ -40,11 +40,11 @@ module Instaw
       if response.headers['set-cookie']
         parse_cookie(response.headers['set-cookie'])
       end
-      # unless ajax
-      #   return response.body
-      # end
-      # JSON.parse(response.body)
-      response
+      unless ajax
+        return response.body
+      end
+      response_hash = JSON.parse(response.body)
+      raise Instaw::MalformedResponseBody unless response_hash.is_a? Hash
     end
 
     def default_headers
@@ -52,7 +52,7 @@ module Instaw
         'authority' => "#{HOST}",
         'scheme' => "#{SCHEME}",
         'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'accept-encoding' => 'gzip, deflate',
+        'accept-encoding' => 'deflate',
         'accept-language' => 'ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4',
         'cache-control' => 'no-cache',
         'cookie' => 'ig_pr=1; ig_vw=1280',
