@@ -45,6 +45,7 @@ module Instaw
       end
       response_hash = JSON.parse(response.body)
       raise Instaw::MalformedResponseBody unless response_hash.is_a? Hash
+      response_hash
     end
 
     def default_headers

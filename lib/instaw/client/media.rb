@@ -1,6 +1,13 @@
 module Instaw
   class Client
     module Media
+      def popular_media(**args)
+        search_media(args).fetch('top_posts', {}).fetch('nodes', [])
+      end
+
+      def recent_media(**args)
+        search_media(args).fetch('media', {}).fetch('nodes', [])
+      end
 
       private
 
@@ -14,14 +21,21 @@ module Instaw
       end
 
       def search_media_by_hashtag(hashtag)
-        get(
+        response = get(
           "/explore/tags/#{hashtag}/",
           {__a: 1},
           {referer: Instaw.endpoint + "/explore/tags/#{hashtag}/"}
         )
+        response['tag']
       end
 
       def search_media_by_location(location)
+        response = get(
+          "/explore/locations/#{location}/",
+          {__a: 1},
+          {referer: Instaw.endpoint + "/explore/locations/#{location}/"}
+        )
+        response['location']
       end
     end
   end
