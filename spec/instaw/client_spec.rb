@@ -3,14 +3,6 @@ require 'spec_helper'
 describe Instaw::Client do
   subject { Instaw::Client.new }
 
-  describe '#new(authorized = false, cookie = nil)' do
-    it 'set cookies' do
-      client = Instaw::Client.new(false, "param=cookie")
-      cookie = client.instance_variable_get("@cookie")
-      expect(cookie).to eq "param=cookie"
-    end
-  end
-
   describe '.authorized?' do
 
     context 'when @authorized is true' do

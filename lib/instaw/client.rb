@@ -1,39 +1,13 @@
 Dir[File.expand_path('../client/*.rb', __FILE__)].each{|f| require f}
 
 require 'instaw/request'
+require 'instaw/connection'
 
 module Instaw
   class Client
     include Instaw::Request
+    include Instaw::Connection
     include Instaw::Client::Searching
     include Instaw::Client::Media
-
-    attr_reader :cookie
-
-    def initialize(authorized = false, cookie = nil)
-      @authorized = authorized
-      @cookie = cookie
-    end
-
-    def auth(username, password)
-      return if authorized? && cookie && csrftoken.length > 0
-      @cookie = nil
-      connect
-      post('/accounts/login/ajax/', {username: username, password: password}, {
-        'referer' => Instaw.endpoint + '/',
-        'x-csrftoken' => csrftoken,
-        'x-instagram-ajax' => '1'})
-      @authorized = true
-    end
-
-    private
-
-    def connect
-      get('/', {}, {'upgrade-insecure-requests' => '1'}, false)
-    end
-
-    def authorized?
-      @authorized
-    end
   end
 end

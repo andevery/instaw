@@ -3,6 +3,7 @@ require "instaw/client"
 require "instaw/request"
 require "instaw/error"
 require "instaw/http_exception"
+require "instaw/connection"
 
 module Instaw
   SCHEME = 'https'.freeze
